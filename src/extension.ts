@@ -1,40 +1,32 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-// import { TestRunner, TestRunnerCoreConfig } from '@web/test-runner';
 import * as vscode from "vscode";
-import { CodeLens, CodeLensProvider, Range, TextDocument } from "vscode";
+import * as path from "path";
+import * as fs from "fs";
 import { TestRunnerCodeLensProvider } from "./CodeLensProvider";
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-const currentWorkspaceFolderPath = () => {
-  const editor = vscode.window.activeTextEditor;
-  if (editor) {
-    return vscode.workspace.getWorkspaceFolder(editor.document.uri)?.uri.fsPath;
-  }
-};
+import findRoot from "find-root";
 
 export function activate(context: vscode.ExtensionContext) {
   const runTestRunner = vscode.commands.registerCommand(
     "test-runner.runWebTestRunner",
-    async () => {
-      const terminal = vscode.window.createTerminal("test-runner");
+    async (testName: string) => {
+      const folderPath = findRoot(testName);
+      const terminal = vscode.window.createTerminal("wtr");
       terminal.show();
       await vscode.commands.executeCommand("workbench.action.terminal.clear");
-      terminal.sendText(`cd /Users/manish.gowardipe/Desktop/esw-ocs-eng-ui`);
-      terminal.sendText(
-        "node_modules/.bin/web-test-runner 'test/**/*.unit.test.{ts,tsx}'"
-      );
+      terminal.sendText(`cd ${folderPath}`);
+      terminal.sendText(`node_modules/.bin/web-test-runner '${testName}'`);
     }
   );
 
   const watchModeTestRunner = vscode.commands.registerCommand(
     "test-runner.runInWatchMode",
-    async () => {
+    async (testName: string) => {
       const terminal = vscode.window.createTerminal("test-runner");
       terminal.show();
       await vscode.commands.executeCommand("workbench.action.terminal.clear");
       terminal.sendText(
-        "web-test-runner 'test/**/*.unit.test.{ts,tsx}' --watch"
+        `web-test-runner test/**/*${testName}*.test.{ts,tsx}' --watch`
       );
     }
   );
@@ -43,8 +35,15 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(watchModeTestRunner);
 
   const codeLensProvider = new TestRunnerCodeLensProvider();
+  const docSelectors: vscode.DocumentFilter[] = [
+    {
+      pattern: vscode.workspace
+        .getConfiguration()
+        .get("test-runner.codeLensSelector"),
+    },
+  ];
   const codeLensProviderDisposable = vscode.languages.registerCodeLensProvider(
-    "*",
+    docSelectors,
     codeLensProvider
   );
   context.subscriptions.push(codeLensProviderDisposable);
@@ -57,32 +56,3 @@ export function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
-
-// const testrunnerConfig: TestRunnerCoreConfig = {
-//   rootDir: testsRoot,
-//   concurrentBrowsers: 1,
-//   concurrency: 1,
-//   protocol: "http",
-//   hostname: "localhost",
-//   port: 8089,
-// 	browserStartTimeout: 2000,
-// 	testsStartTimeout: 5000,
-// 	testsFinishTimeout: 20000,
-// 	coverageConfig: {
-// 		report: true,
-// 		reportDir: './report'
-// 	},
-//   browsers: [],
-//   logger: {
-//     log: (message) => console.log(message),
-//     debug: (message) => console.error(message),
-//     error: (message) => console.error(message),
-//     warn: (message) => console.log(message),
-//     group: () => console.log("group"),
-//     groupEnd: () => console.log("message"),
-//     logSyntaxError: () => console.log("message"),
-//   },
-//   reporters: [],
-//   watch: false,
-// };
-// const testRunner = new TestRunner(testrunnerConfig);
