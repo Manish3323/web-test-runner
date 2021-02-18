@@ -24,7 +24,3 @@ export function findFullTestName(selectedLine: number, children: any[]): string 
 export function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
-
-const parser: ParsedNode = (textDocument: TextDocument) => {
-
-}
