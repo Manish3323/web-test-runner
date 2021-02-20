@@ -5,29 +5,36 @@ import * as path from "path";
 import * as fs from "fs";
 import { TestRunnerCodeLensProvider } from "./CodeLensProvider";
 import findRoot from "find-root";
-
+let terminal: vscode.Terminal | null = null;
 export function activate(context: vscode.ExtensionContext) {
   const runTestRunner = vscode.commands.registerCommand(
     "test-runner.runWebTestRunner",
     async (testName: string) => {
-      const folderPath = findRoot(testName);
-      const terminal = vscode.window.createTerminal("wtr");
-      terminal.show();
-      await vscode.commands.executeCommand("workbench.action.terminal.clear");
-      terminal.sendText(`cd ${folderPath}`);
-      terminal.sendText(`node_modules/.bin/web-test-runner '${testName}'`);
+      await sendCommand(testName, false);
     }
   );
+
+  const sendCommand = async (testName: string, watchMode: boolean) => {
+    const folderPath = findRoot(testName);
+
+    let terminal = vscode.window.terminals.find((x) => x.name === "wtr");
+    if (terminal) {
+      await vscode.commands.executeCommand("workbench.action.terminal.kill");
+    }
+    terminal = vscode.window.createTerminal("wtr");
+    terminal.show();
+    terminal.sendText(`cd ${folderPath}`);
+    terminal.sendText(
+      `node_modules/.bin/web-test-runner ${testName} ${
+        watchMode ? "--watch" : ""
+      }`
+    );
+  };
 
   const watchModeTestRunner = vscode.commands.registerCommand(
     "test-runner.runInWatchMode",
     async (testName: string) => {
-      const terminal = vscode.window.createTerminal("test-runner");
-      terminal.show();
-      await vscode.commands.executeCommand("workbench.action.terminal.clear");
-      terminal.sendText(
-        `web-test-runner test/**/*${testName}*.test.{ts,tsx}' --watch`
-      );
+      await sendCommand(testName, true);
     }
   );
 

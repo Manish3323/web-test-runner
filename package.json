@@ -2,7 +2,7 @@
   "name": "test-runner",
   "displayName": "web/test-runner-extension",
   "description": "vscode plugin for @web/test-runner to run / debug one or more test",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.53.0"
   },
@@ -17,7 +17,11 @@
     "commands": [
       {
         "command": "test-runner.runWebTestRunner",
-        "title": "TestRunner: Start"
+        "title": "TestRunner: Start test on current file"
+      },
+      {
+        "command": "test-runner.runInWatchMode",
+        "title": "TestRunner:Start test on current file in watch mode"
       },
       {
         "title": "Enable CodeLens",

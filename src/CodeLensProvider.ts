@@ -7,7 +7,7 @@ import {
 } from "vscode";
 import * as vscode from "vscode";
 
-function getTestsBlocks(document: TextDocument): CodeLens[] {
+function getCodeLenses(document: TextDocument): CodeLens[] {
   const codeLens: CodeLens[] = [];
   const regex = new RegExp("describe");
   const text = document.getText();
@@ -18,25 +18,21 @@ function getTestsBlocks(document: TextDocument): CodeLens[] {
     const position = new vscode.Position(line.lineNumber, indexOf);
     const range = document.getWordRangeAtPosition(position, new RegExp(regex));
     if (range) {
-      codeLens.push(new vscode.CodeLens(range));
+      codeLens.push(
+        new vscode.CodeLens(range, {
+          title: "Run",
+          command: "test-runner.runWebTestRunner",
+          arguments: [document.fileName],
+        }),
+        new vscode.CodeLens(range, {
+          title: "Debug",
+          command: "test-runner.runInWatchMode",
+          arguments: [document.fileName],
+        })
+      );
     }
   }
   return codeLens;
-  // const range = new Range(new Position(10,0), new Position(10,10));
-  // codeLens.push(
-  //   new CodeLens(range, {
-  //     arguments: [document.fileName],
-  //     command: "test-runner.runWebTestRunner",
-  //     title: "Run",
-  //   }),
-  //   new CodeLens(range, {
-  //     arguments: [document.fileName],
-  //     command: "test-runner.runInWatchMode",
-  //     title: "Debug",
-  //   })
-  // );
-
-  // return codeLens;
 }
 
 export class TestRunnerCodeLensProvider implements CodeLensProvider {
@@ -44,26 +40,7 @@ export class TestRunnerCodeLensProvider implements CodeLensProvider {
   public async provideCodeLenses(document: TextDocument): Promise<CodeLens[]> {
     const codeLens: CodeLens[] = [];
     this.fileName = document.fileName;
-    codeLens.push(...getTestsBlocks(document));
+    codeLens.push(...getCodeLenses(document));
     return codeLens;
-  }
-
-  public resolveCodeLens(
-    codeLens: vscode.CodeLens,
-    token: vscode.CancellationToken
-  ) {
-    if (
-      vscode.workspace
-        .getConfiguration("test-runner")
-        .get("enableCodeLens", true)
-    ) {
-      codeLens.command = {
-        title: "Run",
-        command: "test-runner.runWebTestRunner",
-        arguments: [this.fileName]
-      };
-      return codeLens;
-    }
-    return null;
   }
 }
