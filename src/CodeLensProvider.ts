@@ -9,10 +9,10 @@ import * as vscode from "vscode";
 
 function getCodeLenses(document: TextDocument): CodeLens[] {
   const codeLens: CodeLens[] = [];
-  const regex = new RegExp("describe");
+  const regex = /(describe|it)[(]/g;
   const text = document.getText();
   let matches;
-  if ((matches = regex.exec(text)) !== null) {
+  while ((matches = regex.exec(text)) !== null) {
     const line = document.lineAt(document.positionAt(matches.index).line);
     const indexOf = line.text.indexOf(matches[0]);
     const position = new vscode.Position(line.lineNumber, indexOf);
@@ -22,12 +22,12 @@ function getCodeLenses(document: TextDocument): CodeLens[] {
         new vscode.CodeLens(range, {
           title: "Run",
           command: "test-runner.runWebTestRunner",
-          arguments: [document.fileName],
+          arguments: [document.fileName, matches[1] === "it", range],
         }),
         new vscode.CodeLens(range, {
-          title: "Debug",
+          title: "Watch",
           command: "test-runner.runInWatchMode",
-          arguments: [document.fileName],
+          arguments: [document.fileName, matches[1] === "it", range],
         })
       );
     }

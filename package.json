@@ -22,19 +22,10 @@
       {
         "command": "test-runner.runInWatchMode",
         "title": "TestRunner:Start test on current file in watch mode"
-      },
-      {
-        "title": "Enable CodeLens",
-        "command": "test-runner.enableCodeLens",
-        "category": "CodeLens"
       }
     ],
     "configuration": {
       "properties": {
-        "test-runner.enableCodeLens": {
-          "type": "boolean",
-          "default": true
-        },
         "test-runner.codeLensSelector": {
           "type": "string",
           "default": "**/*.{test,spec}.{js,jsx,ts,tsx}",
