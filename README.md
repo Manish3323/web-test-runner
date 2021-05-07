@@ -1,6 +1,6 @@
 # @web/test-runner
 
-VSCode plugin to run WTR tests via terminal.
+VSCode plugin for triggering WTR tests.
 
 ## Features
 
@@ -24,9 +24,13 @@ For example:
 
 This extension contributes the following settings:
 
-- `test-runner.enableCodeLens`: enable/disable this extension
+- `test-runner.codeLensSelector`: CodeLens will be shown on files matching the specified pattern.
 
-## Known Issues
+Default is set to : "**/*.{test,spec}.{js,jsx,ts,tsx}"
+
+## Supports
+
+- Mocha framework's BDD & TDD style syntax
 
 ## Release Notes
 
