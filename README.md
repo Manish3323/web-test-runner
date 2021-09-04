@@ -31,7 +31,3 @@ Default is set to : "**/*.{test,spec}.{js,jsx,ts,tsx}"
 ## Supports
 
 - Mocha framework's BDD & TDD style syntax
-
-## Release Notes
-
-### 0.0.1
