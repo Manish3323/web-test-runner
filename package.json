@@ -44,7 +44,9 @@
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:electron --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
-    "test-compile": "tsc -p ./"
+    "test-compile": "tsc -p ./",
+    "package:local": "vsce package",
+    "package:publish": "vsce publish -p <PERSONAL_ACCESS_TOKEN>"
   },
   "devDependencies": {
     "@types/find-root": "^1.1.2",
