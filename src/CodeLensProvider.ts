@@ -1,8 +1,6 @@
 import {
   CodeLens,
   CodeLensProvider,
-  Position,
-  Range,
   TextDocument,
 } from "vscode";
 import * as vscode from "vscode";
@@ -38,11 +36,13 @@ function makeCodeLens(regex: RegExp, text: string, document: TextDocument, singl
           title: "Run",
           command: "test-runner.runWebTestRunner",
           arguments: [document.fileName, isRunningSingleTest, range],
+          tooltip: "Runs the test after spawning a new terminal instance & exits the WTR runner."
         }),
         new vscode.CodeLens(range, {
           title: "Watch",
           command: "test-runner.runInWatchMode",
           arguments: [document.fileName, isRunningSingleTest, range],
+          tooltip: "Runs the test after spawning a new terminal instance & uses native WTR's watch mode"
         })
       );
     }
