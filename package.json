@@ -2,7 +2,7 @@
   "name": "test-runner",
   "displayName": "web/test-runner-extension",
   "description": "vscode plugin for @web/test-runner to run / debug one or more test",
-  "version": "0.0.18-local2",
+  "version": "0.0.19",
   "engines": {
     "vscode": "^1.76.0"
   },

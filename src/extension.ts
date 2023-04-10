@@ -6,7 +6,6 @@ import * as fs from "fs";
 import { TestRunnerCodeLensProvider } from "./CodeLensProvider";
 import findRoot from "find-root";
 import {getExtensionLogger} from '@vscode-logging/logger';
-import { readConfig, ConfigLoaderError } from '@web/config-loader';
 
 export function activate(context: vscode.ExtensionContext) {
   const logOutputChannel = vscode.window.createOutputChannel("web-test-runner-output");
@@ -34,39 +33,19 @@ export function activate(context: vscode.ExtensionContext) {
       currentFolderPath,
       "web-test-runner.config.js"
     );
+    const currentFoldermjsConfigPath = path.join(
+      currentFolderPath,
+      "web-test-runner.config.mjs"
+    );
     const currentFolderjsonConfigPath = path.join(
       currentFolderPath,
       "web-test-runner.config.json"
     );
     return (
       fs.existsSync(currentFolderjsConfigPath) ||
+      fs.existsSync(currentFoldermjsConfigPath) ||
       fs.existsSync(currentFolderjsonConfigPath)
     );
-  };
-  const getConfig = () => {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
-      return "";
-    }
-    const workSpaceFolder = vscode.workspace.getWorkspaceFolder(
-      editor.document.uri
-    );
-    if (!workSpaceFolder) {
-      return "";
-    }
-    const currentFolderPath = findRoot(editor.document.fileName);
-    const currentFolderjsConfigPath = path.join(
-      currentFolderPath,
-      "web-test-runner.config.js"
-    );
-    const currentFolderjsonConfigPath = path.join(
-      currentFolderPath,
-      "web-test-runner.config.json"
-    );
-    if(fs.existsSync(currentFolderjsConfigPath)){
-      return currentFolderjsConfigPath;
-    }
-    return currentFolderjsonConfigPath;
   };
 
   const names: [string, boolean][] = [
@@ -105,7 +84,6 @@ export function activate(context: vscode.ExtensionContext) {
     if (terminal) {
       await vscode.commands.executeCommand("workbench.action.terminal.kill");
     }
-    const confPath = getConfig();
     // try {
     //   // extLogger.info(conf);
     //   const readData = await vscode.workspace.fs.readFile(vscode.Uri.file(confPath));
