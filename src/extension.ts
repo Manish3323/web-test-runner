@@ -3,6 +3,8 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import { TestHub, testExplorerExtensionId } from "vscode-test-adapter-api";
+import { Log, TestAdapterRegistrar } from "vscode-test-adapter-util";
 import { TestRunnerCodeLensProvider } from "./CodeLensProvider";
 import findRoot from "find-root";
 import { getExtensionLogger } from "@vscode-logging/logger";
@@ -19,15 +21,33 @@ export function activate(context: vscode.ExtensionContext) {
     logOutputChannel: logOutputChannel,
     logConsole: true, // define if messages should be logged to the consol
   });
+  // const log = new Log(
+  //   "webTestRunnerExplorer",
+  //   workspaceFolder,
+  //   "WebTestRunner Log"
+  // );
+  // context.subscriptions.push(log);
+  
+  // extLogger.info(`Test Explorer ${testExplorerExtension ? "" : "not "}found`);
+
+  // if (testExplorerExtension) {
+  //   const testHub = testExplorerExtension.exports;
+
+  //   // this will register an ExampleTestAdapter for each WorkspaceFolder
+  //   context.subscriptions.push(
+  //     new TestAdapterRegistrar(
+  //       testHub,
+  //       (workspaceFolder) => new ExampleAdapter(workspaceFolder, extLogger),
+  //       log
+  //     )
+  //   );
+  // }
   const configExists = () => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
       return false;
     }
-    const workSpaceFolder = vscode.workspace.getWorkspaceFolder(
-      editor.document.uri
-    );
-    if (!workSpaceFolder) {
+    if (!workspaceFolder) {
       return false;
     }
     const configuredFolderPath = vscode.workspace
@@ -108,7 +128,7 @@ export function activate(context: vscode.ExtensionContext) {
     terminal.show();
     terminal.sendText(`cd ${folderPath}`);
     terminal.sendText(
-      `node_modules/.bin/web-test-runner ${testName} ${
+      `npm run test -- ${testName} ${
         watchMode ? "--watch" : ""
       }`
     );
