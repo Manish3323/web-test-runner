@@ -1,5 +1,5 @@
-import { TextDecoder } from "util";
-import { TextDocument } from "vscode";
+import globby from 'globby';
+import { sep } from 'path';
 
 export function findFullTestName(selectedLine: number, children: any[]): string | undefined {
   if (!children) {
@@ -21,6 +21,7 @@ export function findFullTestName(selectedLine: number, children: any[]): string 
   }
 }
 
-export function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+export function collectTestFiles(patterns: string | string[], baseDir = process.cwd()) {
+  const normalizedPatterns = [patterns].flat().map(p => p.split(sep).join('/'));
+  return globby.sync(normalizedPatterns, { cwd: baseDir, absolute: true });
 }
