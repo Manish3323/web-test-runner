@@ -130,7 +130,7 @@ export function activate(context: vscode.ExtensionContext) {
     terminal.show();
     terminal.sendText(`cd ${folderPath}`);
     terminal.sendText(
-      `npm run test -- ${testName} ${
+      `node_modules/.bin/web-test-runner -- ${testName} ${
         watchMode ? "--watch" : ""
       }`
     );
