@@ -5,10 +5,12 @@ import * as path from "path";
 import * as fs from "fs";
 import { TestRunnerCodeLensProvider } from "./CodeLensProvider";
 import findRoot from "find-root";
-import {getExtensionLogger} from '@vscode-logging/logger';
+import { getExtensionLogger } from "@vscode-logging/logger";
 
 export function activate(context: vscode.ExtensionContext) {
-  const logOutputChannel = vscode.window.createOutputChannel("web-test-runner-output");
+  const logOutputChannel = vscode.window.createOutputChannel(
+    "web-test-runner-output"
+  );
   const extLogger = getExtensionLogger({
     extName: "test-runner",
     level: "info", // See LogLevel type in @vscode-logging/types for possible logLevels
@@ -31,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
     const configuredFolderPath = vscode.workspace
       .getConfiguration()
       .get<string>("test-runner.config-directory");
-    if(configuredFolderPath) {
+    if (configuredFolderPath) {
       extLogger.info(`Extension is running in : ${configuredFolderPath}`);
     }
     const currentFolderPath =
@@ -66,7 +68,16 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       name,
       async (testName: string, singleTest: boolean, range: vscode.Range) => {
-        const folderPath = findRoot(testName);
+        const configuredFolderPath = vscode.workspace
+          .getConfiguration()
+          .get<string>("test-runner.config-directory");
+        if (configuredFolderPath) {
+          extLogger.info(`Extension is running in : ${configuredFolderPath}`);
+        }
+        const folderPath =
+          !!configuredFolderPath && configuredFolderPath !== null
+            ? configuredFolderPath
+            : findRoot(testName);
         if (singleTest && range) {
           appendOnlyToTest(range);
         }
@@ -106,19 +117,19 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(runTestRunner);
   context.subscriptions.push(watchModeTestRunner);
 
-  if (configExists()) {
-    const codeLensProvider = new TestRunnerCodeLensProvider();
-    const docSelectors: vscode.DocumentFilter[] = [
-      {
-        pattern: vscode.workspace
-          .getConfiguration()
-          .get("test-runner.codeLensSelector"),
-      },
-    ];
-    const codeLensProviderDisposable =
-      vscode.languages.registerCodeLensProvider(docSelectors, codeLensProvider);
-    context.subscriptions.push(codeLensProviderDisposable);
-  }
+  const codeLensProvider = new TestRunnerCodeLensProvider();
+  const docSelectors: vscode.DocumentFilter[] = [
+    {
+      pattern: vscode.workspace
+        .getConfiguration()
+        .get("test-runner.codeLensSelector"),
+    },
+  ];
+  const codeLensProviderDisposable = vscode.languages.registerCodeLensProvider(
+    docSelectors,
+    codeLensProvider
+  );
+  context.subscriptions.push(codeLensProviderDisposable);
 }
 
 // this method is called when your extension is deactivated
