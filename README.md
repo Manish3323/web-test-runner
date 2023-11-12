@@ -28,6 +28,10 @@ This extension contributes the following settings:
 
 Default is set to : "**/*.{test,spec}.{js,jsx,ts,tsx}"
 
+- `test-runner.config-directory`: The directory path in which the web-test-config needs to be picked by the extension while running the tests.
+
+Default is set to : null. i.e root of the project will be considered.
+
 ## Supports
 
 - Mocha framework's BDD & TDD style syntax

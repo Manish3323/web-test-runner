@@ -2,7 +2,7 @@
   "name": "test-runner",
   "displayName": "web/test-runner-extension",
   "description": "vscode plugin for @web/test-runner to run / debug one or more test",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "engines": {
     "vscode": "^1.76.0"
   },
@@ -30,6 +30,14 @@
           "type": "string",
           "default": "**/*.{test,spec}.{js,jsx,ts,tsx}",
           "description": "CodeLens will be shown on files matching this pattern"
+        },
+        "test-runner.config-directory": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "Specifies the absolute folder path containing the web test runner config file."
         }
       }
     }
@@ -67,8 +75,6 @@
   "publisher": "manishgowardipe",
   "dependencies": {
     "@vscode-logging/logger": "^1.2.3",
-    "@web/config-loader": "^0.1.3",
-    "@web/test-runner": "^0.15.1",
     "find-root": "^1.1.0"
   },
   "repository": "https://github.com/Manish3323/web-test-runner"

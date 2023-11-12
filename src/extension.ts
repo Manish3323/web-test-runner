@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
     logPath: context.logUri.fsPath, // The logPath is only available from the `vscode.ExtensionContext`
     sourceLocationTracking: false,
     logOutputChannel: logOutputChannel,
-    logConsole: true // define if messages should be logged to the consol
+    logConsole: true, // define if messages should be logged to the consol
   });
   const configExists = () => {
     const editor = vscode.window.activeTextEditor;
@@ -28,7 +28,16 @@ export function activate(context: vscode.ExtensionContext) {
     if (!workSpaceFolder) {
       return false;
     }
-    const currentFolderPath = findRoot(editor.document.fileName);
+    const configuredFolderPath = vscode.workspace
+      .getConfiguration()
+      .get<string>("test-runner.config-directory");
+    if(configuredFolderPath) {
+      extLogger.info(`Extension is running in : ${configuredFolderPath}`);
+    }
+    const currentFolderPath =
+      !!configuredFolderPath && configuredFolderPath !== null
+        ? configuredFolderPath
+        : findRoot(editor.document.fileName);
     const currentFolderjsConfigPath = path.join(
       currentFolderPath,
       "web-test-runner.config.js"
@@ -84,33 +93,6 @@ export function activate(context: vscode.ExtensionContext) {
     if (terminal) {
       await vscode.commands.executeCommand("workbench.action.terminal.kill");
     }
-    // try {
-    //   // extLogger.info(conf);
-    //   const readData = await vscode.workspace.fs.readFile(vscode.Uri.file(confPath));
-		//   const config = Buffer.from(readData).toString('utf8');
-
-    //   // const config = await readConfig('web-test-runner.config',undefined, conf);
-    //   extLogger.info(config);
-    // } catch (error) {
-    //   if (error instanceof ConfigLoaderError) {
-    //     // If the error is a ConfigLoaderError it has a human readable error message
-    //     // there is no need to print the stack trace.
-    //     extLogger.error("inside", error.message);
-    //   }
-    //   extLogger.error("outside");
-    // }
-
-    // let pathForDataUrl = path.resolve(confPath);
-    // let checkExists = fs.existsSync(pathForDataUrl);
-    // let importResult = null;
-    // if (checkExists) {
-    //     let importFileBuffer = fs.readFileSync(pathForDataUrl);
-    //     let dataUrl = `data:text/javascript;base64,${importFileBuffer.toString('base64')}`;
-    //     importResult = await import(dataUrl);
-    //     const config = importResult.default();
-    //     extLogger.info(config);
-    // }
-
     terminal = vscode.window.createTerminal("wtr");
     terminal.show();
     terminal.sendText(`cd ${folderPath}`);
@@ -133,10 +115,8 @@ export function activate(context: vscode.ExtensionContext) {
           .get("test-runner.codeLensSelector"),
       },
     ];
-    const codeLensProviderDisposable = vscode.languages.registerCodeLensProvider(
-      docSelectors,
-      codeLensProvider
-    );
+    const codeLensProviderDisposable =
+      vscode.languages.registerCodeLensProvider(docSelectors, codeLensProvider);
     context.subscriptions.push(codeLensProviderDisposable);
   }
 }
